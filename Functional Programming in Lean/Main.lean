@@ -3,5 +3,20 @@ import «Functional Programming in Lean»
 def main : IO Unit :=
   IO.println s!"Hello, {hello}!"
 
-def add1 (n : Nat) : Nat := n + 1
-#eval add1 100 
+
+
+#eval maximum (-2) (-1)
+
+#check maximum
+
+def F (a : Nat) (b c : Int) : Nat := ((a : Int)*(b)*(c)).natAbs
+#check (F)
+
+example : Nat → Int → Int → Nat := F
+example : Nat := 1
+
+#eval joinStringsWith ", " "one" "and another"
+
+#check joinStringsWith
+
+#eval aStr
