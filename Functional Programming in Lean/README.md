@@ -266,4 +266,32 @@ def isMyZero (n : MyNat) : Bool :=
 The keyword `match` _destructs_ $n$. If $n$ was constructed by `MyNat.zero` then the first branch is taken, else the second one.
 The _underscore_ of the function `isMyZero` is called a _wildcard pattern_. It tells Lean to match any argument without assigning it a name.
 
+Let us use `match` to create a function that extract the imaginary part of a complex number.
+
+```Lean
+def ImaginaryPartWithMatch (p : Cartesian) : Float :=
+  match p with
+  | {x:=_, y:= img_part} => img_part
+def ImaginaryPartWithoutMatch (p : Cartesian) : Float :=
+  p.y
+ -- Both functions produce the same output
+ 
+#eval ImaginaryPartWithMatch ({x := 1, y:= 2} : Cartesian)
+-- 2.0
+#eval ImaginaryPartWithoutMatch ({x := 1, y:= 2} : Cartesian)
+-- 2.0
+```
+
+### Recursive functions 
+
+Let us see with a simple example how we can define a simple recursive function
+
+```Lean
+def IsEven (n : MyNat) : Bool :=
+  match n with 
+  | .zero => true
+  | .MySucc k => not (IsEven k)
+```
+
+One of the CRAZIEST things about Lean is that  it will catch an error if a recursive function will not terminate (how the f*ck, idk). A lot more about examples of recursive functions can be found in `MyNatural Numbers.lean`
 
