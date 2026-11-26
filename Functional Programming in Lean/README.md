@@ -88,7 +88,7 @@ To correct this we need to specify the type Int in the operation
 
 ## Functions and Definitions
 
-We have already usted definitions and functions at the beginning, if we are familiarized with other programming languages, this is only an extrapolation of suchs.
+We have already used definitions and functions at the beginning, if we are familiarized with other programming languages, this is only an extrapolation of suchs.
 
 ```Lean
 -- Simple enough for Lean to infer the type
@@ -146,4 +146,124 @@ example : X_1 -> X_2 -> \cdots -> X_n -> Y := F
 
 In theory, ALL functions accept only one argument. Multiple argument functions in reality return functions that take one argument at a time, in a cascade way. For example,  the function `maximum` takes an integer and return another function that takes one integers and returns another integers.
 This way we have that the type of `maximum`(strictly speaking) is not `Int -> Int -> Int` but `Int -> (Int -> Int)`.
+
+### We can define types!!!
+
+Types are a first class object in Lean, thus, we can even define new types.
+
+```Lean
+def Str : Type := String
+def aStr : Str := "This is a string"
+```
+
+## Structures
+A similar concept as `struct` in `C`. Creating new types. This can be better visualized with an example (the `Complex Numbers.lean` code has some functions and structures)
+
+A couple of good things to take into account:
+- Given a structure, `Cartesian` for example, we can define a function 
+```Lean
+def Cartesian.modify (f : Float → Float) (p : Cartesian) : Cartesian :=
+  { x := f p.x, y := f p.y }
+```
+And once we have a `point` defined of type `Cartesian`.
+```Lean
+point.modify f
+```
+will do the work just fine (similar to other programming langagues.
+
+- A constructor (DO NOT CONFUSE WITH THE SAME TERMINOLOGY FOR JAVA AND OTHER LANGUAGES) is not code that runs when the object is created (you wish). Here consutrctors is just the data of the newly allocated data structure. ' It is not possible to provide a custom constructor that pre-processes data or rejects invalid arguments '
+-   The deafult constructor of a structure `Struc`is named `Struc.mk`, this can be renamed:
+
+```Lean
+-- A normal structure without the construct modified
+structure Cartesian where
+    x : Float
+    y : Float
+    
+-- We can modify its constructor like this:
+structure CartesianAlt where
+    cartesianMaker ::
+    x : Float
+    y : Float
+    
+-- In this second instance now we no longer call the constructor by `CartesianAlt.mk`
+-- but by `CartesianAlt.cartesianMaker`
+
+#check Cartesian.mk
+--Cartesian.mk (x y : Float) : Cartesian
+#check CartesianAlt.cartesianMaker
+--CartesianAlt.cartesianMaker (x y : Float) : CartesianAlt 
+
+#check ({x := 1, y:= 2} : Cartesian)
+-- { x := 1, y := 2 } : Cartesian
+
+
+
+#check Cartesian.x-- Cartesian.x (self : Cartesian) : Float#check (Cartesian.x)
+-- Cartesian.x : Cartesian → Float  
+```
+## Data Types and Patterns
+
+We will describe three main types of datatypes, in the previous section we saw how `structure` defines a datatype, this datatype is usually denoted as a **product type**, because we can see it as tuples of other types. For example, the `Cartesian` type is a product of two floating numbers. 
+
+A datatype that allows _choices_, is called a **sum datatype**, and its created using the keyword `inductive`, instead of `structure`
+
+```Lean
+inductive TrafficLight where
+  | red
+  | yellow
+  | green
+
+def light : TrafficLight := TrafficLight.red
+
+#eval (light)
+-- TrafficLight.red
+```
+
+And third, we have **recursive datatypes**, which as the name indicates, are datatypes that call themselves (they use the same keyword as for sum datatypes `inductive`). With a lot of similar uses as in many other programming languages, for e.g. to create binary trees, linked lists, etc...
+
+For example, we can create the natural numbers from an inductive datatype:
+
+```Lean
+
+-- This is the EXACT definition of Nat in Leaninductive MyNat where
+  | zero : MyNat
+  | Mysucc (n : MyNat) : MyNat
+
+def one : MyNat := MyNat.Mysucc MyNat.zero
+
+#eval one
+-- MyNat.Mysucc (MyNat.zero)
+#check one
+-- one : MyNat
+```
+
+Both of these datatypes have similar uses as in other programming languages, like python, java, javascript. Let us see now how to use them and how the constructors and operations behave. First, a simple function:
+
+```Lean
+def isMyZero (n : MyNat) : Bool :=
+  match n with
+  | MyNat.zero => true
+  | MyNat.Mysucc _ => false
+
+#eval isMyZero one
+--flase
+#eval isMyZero MyNat.zero
+--true
+
+
+-- Another example.def MyPred (n : MyNat) : MyNat :=
+  match n with
+  | MyNat.zero => MyNat.zero
+  | MyNat.Mysucc k => k
+
+#eval MyPred MyNat.zero
+-- MyNat.zero
+#eval MyPred one
+-- MyNat.zero
+```
+
+The keyword `match` _destructs_ $n$. If $n$ was constructed by `MyNat.zero` then the first branch is taken, else the second one.
+The _underscore_ of the function `isMyZero` is called a _wildcard pattern_. It tells Lean to match any argument without assigning it a name.
+
 
