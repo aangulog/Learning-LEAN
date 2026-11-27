@@ -1,8 +1,9 @@
 # Intro
 This notes are being made by me (aangulog) in order to have a quick look-up to things I'll learn through the book: https://lean-lang.org/functional_programming_in_lean
+P.D. Fuck A.I.
 
 Some important thing to take into account are:
-- `elan` manages the Lean compiler,m
+- `elan` manages the Lean compiler,
 - `lake` builds Lean packages and the dependancies,
 - Lean type checks and compiles individual Lean files.
 
@@ -226,7 +227,8 @@ For example, we can create the natural numbers from an inductive datatype:
 
 ```Lean
 
--- This is the EXACT definition of Nat in Leaninductive MyNat where
+-- This is the EXACT definition of Nat in Lean
+inductive MyNat where
   | zero : MyNat
   | Mysucc (n : MyNat) : MyNat
 
@@ -293,5 +295,25 @@ def IsEven (n : MyNat) : Bool :=
   | .MySucc k => not (IsEven k)
 ```
 
-One of the CRAZIEST things about Lean is that  it will catch an error if a recursive function will not terminate (how the f*ck, idk). A lot more about examples of recursive functions can be found in `MyNatural Numbers.lean`
+One of the CRAZIEST things about Lean is that  it will catch an error if a recursive function will not terminate (how the f*ck, idk). A lot more about examples of recursive functions can be found in `MyNatural Numbers.lean
+
+## Polymorphism
+
+As we said earlier, Types are a first class object and hence can be treated as such. In Lean _polymorphism_ refears to datatypes and definitions that takes types themselves as arguments. Let us see an example:
+
+```Lean
+structure PolySmthing (α : Type) where  
+  x : α
+  y : α 
+
+def natOrigin : PolySmthing Nat := {x := Nat.zero, y:= Nat.zero}
+def stringOrigin : PolySmthing String := {x := "0", y:= "0"}
+
+#check (stringOrigin)
+-- PolySmthing String
+-- stringOrigin : PolySmthing String
+#check (natOrigin)
+-- PolySmthing Nat
+-- natOrigin : PolySmthing Nat
+```
 
